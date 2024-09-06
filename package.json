@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.19.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "full": "yarn build && yarn start"
   },
   "repository": {
     "type": "git",
@@ -15,5 +20,10 @@
   "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/prolletto64/raiplaysound/issues"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.4",
+    "typescript": "^5.5.4"
   }
 }
