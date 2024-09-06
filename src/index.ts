@@ -23,6 +23,7 @@ app.get("/*.xml",(req:Request,res:Response)=>{
         if(fs.existsSync(filename)){
          res.send(fs.readFileSync(filename).toString());
         }else{
+            console.error(pythonprocess.stderr.toString())
             res.statusCode=400;
             res.send("your podcast doesn't exist");
         }
