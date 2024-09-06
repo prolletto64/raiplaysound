@@ -20,9 +20,8 @@ app.use(limiter);
 
 app.get("/*.xml",(req:Request,res:Response)=>{
     let sent=false;
-    let filename=req.path;
-    filename=fs.realpathSync(path.resolve("podcast", filename));
-    if (!filename.startsWith("podcasts")) {
+    let filename=fs.realpathSync(path.join("podcasts", req.path));
+    if (!filename.startsWith(path.resolve("./","podcasts"))) {
         res.statusCode = 403;
         res.send("bad path exploit");
         return;
