@@ -1,3 +1,4 @@
+import { spawnSync } from "child_process";
 import express, { Express, Request, Response } from "express";
 import fs from "fs";
 
@@ -18,7 +19,13 @@ app.get("/*.xml",(req:Request,res:Response)=>{
         }
     }
     if(!sent){
-        res.send("");
+        const pythonprocess = spawnSync("python", ["single.py","https://www.raiplaysound.it/programmi"+req.path.slice(0,-4),"-f","podcasts","--film","--programma","--dateok"]);
+        if(fs.existsSync(filename)){
+         res.send(fs.readFileSync(filename).toString());
+        }else{
+            res.statusCode=400;
+            res.send("your podcast doesn't exist");
+        }
     }
 });
 
