@@ -2,7 +2,7 @@ import { spawnSync } from "child_process";
 import express, { Express, Request, Response } from "express";
 import RateLimit from "express-rate-limit";
 import fs from "fs";
-import url from "url"
+import path from "path";
 
 const app: Express = express();
 const port = 4000;
@@ -20,7 +20,13 @@ app.use(limiter);
 
 app.get("/*.xml",(req:Request,res:Response)=>{
     let sent=false;
-    const filename="podcasts"+url.parse(req.url, true).query.path;
+    let filename=req.path;
+    filename=fs.realpathSync(path.resolve("podcast", filename));
+    if (!filename.startsWith("podcasts")) {
+        res.statusCode = 403;
+        res.send("bad path exploit");
+        return;
+      }
     if(fs.existsSync(filename)){
         const diffMillis=Math.abs(new Date().getTime() - fs.statSync(filename).mtime.getTime())
         const diffMins=Math.floor(diffMillis/(1000*60))
