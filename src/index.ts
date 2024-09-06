@@ -1,12 +1,22 @@
 import { spawnSync } from "child_process";
 import express, { Express, Request, Response } from "express";
+import RateLimit from "express-rate-limit";
 import fs from "fs";
 
 const app: Express = express();
 const port = 4000;
+
+const limiter = RateLimit({
+    windowMs: 20 * 60 * 1000,
+    max: 100,
+  });
+
 if(!fs.existsSync("podcasts")){
     fs.mkdirSync("podcasts");
 }
+
+app.use(limiter);
+
 app.get("/*.xml",(req:Request,res:Response)=>{
     let sent=false;
     const filename="podcasts"+req.path;
