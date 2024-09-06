@@ -1,23 +1,19 @@
-FROM nikolaik/python-nodejs:latest as development
+FROM nikolaik/python-nodejs:latest as build
 WORKDIR /usr/src/app
-COPY ./requirements.txt
+COPY ./requirements.txt ./
 RUN pip install -r requirements.txt
-COPY ./package.json ./yarn.lock ./
-RUN yarn
-RUN yarn install
+COPY ./package.json ./
+RUN npm install
 COPY ./ ./
-RUN yarn build
+RUN npm run build
+
+FROM nikolaik/python-nodejs:latest
+WORKDIR /app
+COPY ./ ./
+COPY --from=build /usr/src/app/dist ./dist
+RUN npm install
+ARG NODE_ENV production
+ENV NODE_ENV ${NODE_ENV}
 ENV PORT 4000
 EXPOSE $PORT
-
-
-# Production mode
-FROM nikolaik/python-nodejs:latest as production
-RUN pip install scikit-learn numpy pandas simplejson
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-WORKDIR /usr/src/app
-COPY --from=development /usr/src/app ./
-ENV PORT 4000
-EXPOSE $PORT
-CMD ["node", "dist/main"]
+CMD ["node", "dist/index.js"]
