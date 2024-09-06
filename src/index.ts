@@ -1,7 +1,26 @@
 import express, { Express, Request, Response } from "express";
+import fs from "fs";
 
 const app: Express = express();
 const port = 4000;
+if(!fs.existsSync("podcasts")){
+    fs.mkdirSync("podcasts");
+}
+app.get("/*.xml",(req:Request,res:Response)=>{
+    let sent=false;
+    const filename="podcasts"+req.path;
+    if(fs.existsSync(filename)){
+        const diffMillis=Math.abs(new Date().getTime() - fs.statSync(filename).mtime.getTime())
+        const diffHours=Math.floor(diffMillis/(1000*60*60))
+        if(diffHours<=2){
+            res.send(fs.readFileSync(filename).toString());
+            sent=true;
+        }
+    }
+    if(!sent){
+        res.send("");
+    }
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.statusCode = 400;
