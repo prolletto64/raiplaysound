@@ -12,8 +12,8 @@ app.get("/*.xml",(req:Request,res:Response)=>{
     const filename="podcasts"+req.path;
     if(fs.existsSync(filename)){
         const diffMillis=Math.abs(new Date().getTime() - fs.statSync(filename).mtime.getTime())
-        const diffHours=Math.floor(diffMillis/(1000*60*60))
-        if(diffHours<=2){
+        const diffMins=Math.floor(diffMillis/(1000*60))
+        if(diffMins<=15){
             res.send(fs.readFileSync(filename).toString());
             sent=true;
         }
