@@ -1,2 +1,6 @@
 dist
-*.xml
+node_modules/
+.yarn
+.gitattributes
+yarn.lock
+.editorconfig

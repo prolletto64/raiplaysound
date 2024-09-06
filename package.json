@@ -1,0 +1,19 @@
+{
+  "name": "raiplaysound",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prolletto64/raiplaysound.git"
+  },
+  "author": "prolletto64",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/prolletto64/raiplaysound/issues"
+  }
+}
