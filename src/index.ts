@@ -32,6 +32,7 @@ app.get("/*.xml", (req: Request, res: Response) => {
     const diffMins = Math.floor(diffMillis / (1000 * 60));
     if (diffMins <= 15) {
       res.send(fs.readFileSync(filename).toString());
+      console.log("served " +req.path.slice(1));
       return;
     }
   }
@@ -46,6 +47,7 @@ app.get("/*.xml", (req: Request, res: Response) => {
   ]);
   if (fs.existsSync(filename)) {
     res.send(fs.readFileSync(filename).toString());
+    console.log("served " +req.path.slice(1));
     return;
   }
   pythonprocess = spawnSync("python", [
@@ -59,6 +61,7 @@ app.get("/*.xml", (req: Request, res: Response) => {
   ]);
   if (fs.existsSync(filename)) {
     res.send(fs.readFileSync(filename).toString());
+    console.log("served " +req.path.slice(1));
     return;
   }
   res.statusCode = 400;
