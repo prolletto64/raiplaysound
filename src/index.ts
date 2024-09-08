@@ -19,57 +19,50 @@ if (!fs.existsSync("podcasts")) {
 app.use(limiter);
 
 app.get("/*.xml", (req: Request, res: Response) => {
-  let sent = false;
-  let filename =path.resolve(path.join("podcasts", req.path));
+  let filename = path.resolve(path.join("podcasts", req.path));
   if (!filename.startsWith(path.resolve("./", "podcasts"))) {
-      res.statusCode = 403;
-      res.send("bad path exploit");
+    res.statusCode = 403;
+    res.send("bad path exploit");
+    return;
+  }
+  if (fs.existsSync(filename)) {
+    const diffMillis = Math.abs(
+      new Date().getTime() - fs.statSync(filename).mtime.getTime()
+    );
+    const diffMins = Math.floor(diffMillis / (1000 * 60));
+    if (diffMins <= 15) {
+      res.send(fs.readFileSync(filename).toString());
       return;
     }
-    if (fs.existsSync(filename)) {
-      const diffMillis = Math.abs(
-        new Date().getTime() - fs.statSync(filename).mtime.getTime()
-      );
-      const diffMins = Math.floor(diffMillis / (1000 * 60));
-      if (diffMins <= 15) {
-        res.send(fs.readFileSync(filename).toString());
-        sent = true;
-      }
-    }
-    if (!sent) {
-      const pythonprocess = spawnSync("python", [
-        "single.py",
-        "https://www.raiplaysound.it/programmi" + req.path.slice(0, -4),
-        "-f",
-        "podcasts",
-        "--film",
-        "--programma",
-        "--dateok",
-      ]);
-      if (fs.existsSync(filename)) {
-        res.send(fs.readFileSync(filename).toString());
-        sent = true;
-      }
-    }
-    if (!sent) {
-      const pythonprocess = spawnSync("python", [
-        "single.py",
-        "https://www.raiplaysound.it/playlist" + req.path.slice(0, -4),
-        "-f",
-        "podcasts",
-        "--film",
-        "--programma",
-        "--dateok",
-      ]);
-      if (fs.existsSync(filename)) {
-        res.send(fs.readFileSync(filename).toString());
-        sent = true;
-      }
-    }
-  if (!sent) {
-    res.statusCode = 400;
-    res.send("requested podcast doesn't seem to exist on raiplaysound...");
   }
+  let pythonprocess = spawnSync("python", [
+    "single.py",
+    "https://www.raiplaysound.it/programmi" + req.path.slice(0, -4),
+    "-f",
+    "podcasts",
+    "--film",
+    "--programma",
+    "--dateok",
+  ]);
+  if (fs.existsSync(filename)) {
+    res.send(fs.readFileSync(filename).toString());
+    return;
+  }
+  pythonprocess = spawnSync("python", [
+    "single.py",
+    "https://www.raiplaysound.it/playlist" + req.path.slice(0, -4),
+    "-f",
+    "podcasts",
+    "--film",
+    "--programma",
+    "--dateok",
+  ]);
+  if (fs.existsSync(filename)) {
+    res.send(fs.readFileSync(filename).toString());
+    return;
+  }
+  res.statusCode = 400;
+  res.send("requested podcast doesn't seem to exist on raiplaysound...");
 });
 
 app.get("/", (req: Request, res: Response) => {
