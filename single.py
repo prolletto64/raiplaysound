@@ -19,25 +19,20 @@ def url_to_filename(url: str) -> str:
 def _datetime_parser(s: str) -> dt | None:
     if not s:
         return None
-    try:
-        return dt.strptime(s, "%d-%m-%Y %H:%M:%S")
-    except ValueError:
-        pass
-    try:
-        return dt.strptime(s, "%d-%m-%Y %H:%M")
-    except ValueError:
-        pass
-    try:
-        return dt.strptime(s, "%Y-%m-%d")
-    except ValueError:
-        pass
+    formats = ["%d-%m-%Y %H:%M:%S", "%d-%m-%Y %H:%M", "%Y-%m-%d"]
+    for fmt in formats:
+        try:
+            return dt.strptime(s, fmt)
+        except ValueError:
+            pass
+    print("Unparsed ", s)
     return None
 
 
 class RaiParser:
-    def __init__(self, url: str, folderPath: str) -> None:
+    def __init__(self, url: str, folder_path: str) -> None:
         self.url = url
-        self.folderPath = folderPath
+        self.folderPath = folder_path
         self.inner: list[Feed] = []
 
     def extend(self, url: str) -> None:
@@ -196,49 +191,3 @@ def atomic_write(filename, content: str):
     tmp.write(content)
     tmp.close()
     os.replace(tmp.name, filename)
-
-
-def main():
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="Genera un RSS da un programma di RaiPlaySound.",
-        epilog="Info su https://github.com/timendum/raiplaysound/",
-    )
-    parser.add_argument("url", help="URL di un podcast (o playlist) su raiplaysound.")
-    parser.add_argument(
-        "-f", "--folder", help="Cartella in cui scrivere il RSS podcast.", default="."
-    )
-    parser.add_argument(
-        "--film",
-        help="Elabora il podcast anche se sembra un film.",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--programma",
-        help="Elabora il podcast anche se sembra un programma radio/tv.",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--dateok",
-        help="Lascia inalterata la data di pubblicazione degli episodi.",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--reverse",
-        help="Ordina gli episodi dal più recente al meno recente.",
-        action="store_true",
-    )
-
-    args = parser.parse_args()
-    parser = RaiParser(args.url, args.folder)
-    parser.process(
-        skip_programmi=not args.programma,
-        skip_film=not args.film,
-        date_ok=args.dateok,
-        reverse=args.reverse,
-    )
-
-
-if __name__ == "__main__":
-    main()
