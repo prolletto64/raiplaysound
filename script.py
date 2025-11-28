@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 
 def handle_single(args: "Namespace") -> None:
-    from raiplaysound.single import SKIP_DEFAULT, RaiParser
+    from single import SKIP_DEFAULT, RaiParser
 
     parser = RaiParser(
         args.url,

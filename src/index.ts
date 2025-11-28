@@ -37,12 +37,11 @@ app.get("/*.xml", (req: Request, res: Response) => {
     }
   }
   let pythonprocess = spawnSync("python", [
-    "single.py",
+    "script.py",
+    "single",
     "https://www.raiplaysound.it/programmi" + req.path.slice(0, -4),
     "-f",
     "podcasts",
-    "--film",
-    "--programma",
     "--dateok",
   ]);
   if (fs.existsSync(filename)) {
@@ -51,12 +50,11 @@ app.get("/*.xml", (req: Request, res: Response) => {
     return;
   }
   pythonprocess = spawnSync("python", [
-    "single.py",
+    "script.py",
+    "single",
     "https://www.raiplaysound.it/playlist" + req.path.slice(0, -4),
     "-f",
     "podcasts",
-    "--film",
-    "--programma",
     "--dateok",
   ]);
   if (fs.existsSync(filename)) {
